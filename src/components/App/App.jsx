@@ -2,7 +2,7 @@ import { GlobalStyle } from '../GlobalStyle';
 import { Component } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Searchbar from 'components/Searchbar';
-import Api from '../Api/Api.js';
+import Api from '../../Api/Api.js';
 import ImageGallery from 'components/ImageGallery';
 import Button from 'components/Button';
 import Loader from 'components/Loader';
@@ -21,14 +21,30 @@ export class App extends Component {
     const { page, query } = this.state;
 
     if (prevState.query !== query) {
-      this.setState({ items: [] });
+      this.setState({
+        items: [],
+      page:1});
 
       try {
-        const { hits } = await Api(query, page);
-      this.setState({ isLoading: true });
-
+        this.setState({ isLoading: true });
+        const { hits, totalHits } = await Api(query, page);
+        if (!totalHits) {
+        toast.error('Sorry, but nothing was found for your request');
+        
+        }
+       const imagesArray = hits.map(
+         ({ id, largeImageURL, tags, webformatURL }) => {
+           return {
+             id,
+             largeImageURL,
+             tags,
+             webformatURL,
+           };
+         }
+       );
+       
         this.setState(prevState => ({
-          items: [...prevState.items, ...hits],
+          items: [...prevState.items, ...imagesArray],
         }));
       } catch (error) {
        toast.error('Oops! Something went wrong! Please try again.');
@@ -38,13 +54,22 @@ export class App extends Component {
     }
 
     if (prevState.page !== page && page !== 1) {
-      this.setState({ isLoading: true });
 
       try {
+          this.setState({ isLoading: true });
         const { hits } = await Api(query, page);
-
+        const imagesArray = hits.map(
+          ({ id, largeImageURL, tags, webformatURL }) => {
+            return {
+              id,
+              largeImageURL,
+              tags,
+              webformatURL,
+            };
+          }
+        );
         this.setState(prevState => ({
-          items: [...prevState.items, ...hits],
+          items: [...prevState.items, ...imagesArray],
         }));
       } catch (error) {
         toast.error('Oops! Something went wrong! Please try again.');
@@ -79,15 +104,20 @@ export class App extends Component {
     return (
       <>
         <Searchbar onSubmit={this.inputValue} />
-        {items && <ImageGallery items={items} onClick={this.openModal} />}
+        {items.length > 0 && (
+          <ImageGallery items={items} onClick={this.openModal} />
+        )}
+
+        {items.length > 11 && !isLoading && (
+          <Button incrementPage={this.incrementPage} />
+        )}
+        {isLoading && <Loader />}
         {showModal && (
           <Modal onClose={this.toggleModal}>
             <img src={modalImage} alt="largeImage" />
           </Modal>
         )}
-        {items.length > 11 && <Button incrementPage={this.incrementPage} />}
-        {isLoading && <Loader />}
-        <Toaster position='top-right'/>
+        <Toaster position="top-right" />
         <GlobalStyle />
       </>
     );

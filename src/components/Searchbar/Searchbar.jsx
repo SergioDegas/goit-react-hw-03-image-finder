@@ -4,27 +4,29 @@ import { Form, Input, SearchBtn } from './Searchbar.styled';
 import toast from 'react-hot-toast';
 
 class Searchbar extends Component {
+  static propTypes = {
+    onSubmit: PropTypes.func.isRequired,
+  };
   state = {
     searchQuery: '',
   };
 
   onChangeInput = e => {
     this.setState({ searchQuery: e.currentTarget.value.toLowerCase() });
-    
   };
 
   handleSubmit = e => {
     e.preventDefault();
-   
+
     if (this.state.searchQuery.trim() === '') {
-      toast.error('write something' )
-     return
-      }
-       this.props.onSubmit(this.state.searchQuery);
+      toast.error('write something');
+      return;
+    }
+    this.props.onSubmit(this.state.searchQuery);
     this.setState({ searchQuery: '' });
-      e.target.reset();
-  }
-    
+    e.target.reset();
+  };
+
   render() {
     const { searchQuery } = this.state.searchQuery;
     return (
@@ -49,6 +51,3 @@ class Searchbar extends Component {
 }
 
 export default Searchbar;
-Searchbar.propType = {
-  onSubmit: PropTypes.func.isRequired,
-};
