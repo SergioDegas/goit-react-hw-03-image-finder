@@ -21,12 +21,8 @@ export class App extends Component {
     const { page, query } = this.state;
 
     if (prevState.query !== query) {
-      this.setState({
-        items: [],
-      page:1});
-
       try {
-        this.setState({ isLoading: true });
+        this.setState({ isLoading: true, items: [], page: 1 });
         const { hits, totalHits } = await Api(query, page);
         if (!totalHits) {
         toast.error('Sorry, but nothing was found for your request');

@@ -16,7 +16,7 @@ ImageGalleryItem.propTypes = {
   image: PropTypes.string.isRequired,
   tags: PropTypes.string.isRequired,
   onModal: PropTypes.func.isRequired,
-  largeImage: PropTypes.string.isRequired,
+  largeImageURL: PropTypes.string.isRequired,
 };
 
 export default ImageGalleryItem;
