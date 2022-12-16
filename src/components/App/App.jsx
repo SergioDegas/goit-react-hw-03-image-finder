@@ -22,8 +22,9 @@ export class App extends Component {
 
     if (prevState.query !== query) {
       try {
-        this.setState({ isLoading: true, items: [], page: 1 });
-        const { hits, totalHits } = await Api(query, page);
+        this.setState({ isLoading: true, items: [], });
+      
+        const { hits, totalHits } = await Api(query, page );
         if (!totalHits) {
         toast.error('Sorry, but nothing was found for your request');
         
@@ -76,7 +77,7 @@ export class App extends Component {
   }
 
   inputValue = query => {
-    this.setState({ query });
+    this.setState({ query, page: 1 });
     // console.log(query);
   };
 
